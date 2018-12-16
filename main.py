@@ -19,6 +19,6 @@ str2 = "1111"
 dfa = DFA(list, state0)
 
 if dfa.accepts(str1):
-    print("Prihvata str1")
+    print("Accepts str1")
 if dfa.accepts(str2):
-    print("Prihvata str2")
+    print("Accepts str2")
