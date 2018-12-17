@@ -2,12 +2,24 @@ from State import State
 
 class DFA:
     def __init__(self):
-        self.listOfStates = []
+        self.dictOfStates = {}
         self.startingState = None
+        self.alphabet = []
 
-    def __init__(self, listOfStates : list, startingState : State):
-        self.listOfStates = listOfStates
+    def __init__(self, dictOfStates : dict, startingState : State, alphabet: list):
+        self.dictOfStates = dictOfStates
         self.startingState = startingState
+        for i in alphabet:
+            for key, value in dictOfStates.items():
+                if i not in value.transitions:
+                    print("Missing transition for " + str(i) + ", state: ", key)
+                    return
+        self.alphabet = alphabet
+
+    def __getStateUsingStateNumber(self, number: int):
+        for state in self.listOfStates:
+            if state.stateNumber == number:
+                return state
 
     def __stateNumber(self, number: int) -> State:
         for state in self.listOfStates:
@@ -17,12 +29,12 @@ class DFA:
     def accepts(self, string: str) -> bool:
         currentState = self.startingState
         for i in string:
-            if int(i) == 0:
-                nextState = currentState.stateFor0
-            elif int(i) == 1:
-                nextState = currentState.stateFor1
-            currentState = self.__stateNumber(nextState)
-            print(currentState.stateNumber)
+            if not i.isalpha():
+                nextState = currentState.transitions[int(i)]
+            else:
+                nextState = currentState.transitions[i]
+            currentState = self.dictOfStates[nextState]
+            #print(currentState.stateNumber)
         if currentState.isFinalState :
             return True
         else:
