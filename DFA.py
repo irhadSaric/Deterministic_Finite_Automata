@@ -9,15 +9,10 @@ class DFA:
     def __init__(self, dictOfStates : dict, startingState : State, alphabet: list):
         self.dictOfStates = dictOfStates
         self.startingState = startingState
-        for i in alphabet:
-            for key, value in dictOfStates.items():
-                if i not in value.transitions:
-                    print("Missing transition for " + str(i) + ", state: ", key)
-                    return
         self.alphabet = alphabet
 
     def __getStateUsingStateNumber(self, number: int):
-        for state in self.listOfStates:
+        for state in self.dictOfStates:
             if state.stateNumber == number:
                 return state
 
@@ -27,6 +22,13 @@ class DFA:
                 return state
 
     def accepts(self, string: str) -> bool:
+        """
+        for i in alphabet:
+            for key, value in dictOfStates.items():
+                if i not in value.transitions:
+                    print("Missing transition for " + str(i) + ", state: ", key)
+                    return
+        """
         currentState = self.startingState
         for i in string:
             if not i.isalpha():
