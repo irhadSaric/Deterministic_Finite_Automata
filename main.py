@@ -59,23 +59,24 @@ else:
     print("Ne prihvata")
 """
 
-state0 = State(0, False, {1: [1, 5]})
+state0 = State(0, False, {1: [1, 5], "epsilon": [99]})
 state1 = State(1, False, {0: [2, 99], 1: [3]})
 state2 = State(2, False, {})
 state3 = State(3, False, {1: [4]})
 state4 = State(4, True, {})
 state5 = State(5, False, {0: [6]})
 state6 = State(6, True, {1: [6]})
-state99 = State(99, True, {})
+state99 = State(99, True, {0: [99]})
 
 str = "11101"
 str2 = "111"
 str3 = "101111111"
+str4 = "0000000"
 alphabet = [0, 1]
 states = {0: state0, 1: state1, 2: state2, 3: state3, 4: state4, 5: state5, 6: state6, 99: state99}
 nfa = NFA(states, state0, alphabet)
 
-if nfa.accepts(str3):
+if nfa.accepts(str4):
     print("Prihvata")
 else:
     print("Ne prihvata")
