@@ -21,6 +21,10 @@ class NFA(DFA):
             symbol = int(symbol)
 
         if startingState.transitions:
+            if "epsilon" in startingState.transitions:
+              for i in startingState.transitions["epsilon"]:
+                    if(self.__accepts_rek(self.__stateNumber(i), string, indexOfCurrentSymbol)):
+                        return True
             if symbol in startingState.transitions:
             #print(symbol, startingState.stateNumber, indexOfCurrentSymbol)
                 for i in startingState.transitions[symbol]:
