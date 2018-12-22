@@ -31,6 +31,20 @@ class NFA(DFA):
                     if(self.__accepts_rek(self.__stateNumber(i), string, indexOfCurrentSymbol + 1)):
                         return True
 
-    def accepts(self, string: str):
+    def accepts(self, string: str) -> bool:
         return self.__accepts_rek(self.startingState, string, 0)
 
+    def allStatesUsingOnlyEpsilonEdges(self, state: State) -> list:
+        queue = []
+        result = []
+        queue.append(state)
+        result.append(state.stateNumber)
+        while len(queue) != 0:
+            if "epsilon" in queue[0].transitions:
+                for i in queue[0].transitions["epsilon"]:
+                    queue.append(self.__stateNumber(i))
+                    result.append(i)
+            queue.pop(0)
+
+        for i in result:
+            print(i)

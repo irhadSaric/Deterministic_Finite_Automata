@@ -1,15 +1,5 @@
 from NFA import *
-"""from itertools import combinations
-
-for j in range (1, 5):
-    for i in combinations("1234", j):
-        for k in range (0, len(i)):
-            print(i[k], end=" ")
-        print()
-#print(combinations("01234", 2), end=" ")
-#print(combinations("01234", 3), end=" ")
-
-"""
+from itertools import combinations
 
 """
 state0 = State(0, True, {0: 0, 1: 1})
@@ -34,10 +24,13 @@ dfa = DFA(list, state0, alphabet)
 
 if dfa.accepts(str1):
     print("Accepts str1")
+else:
+    print("Doesn't accept str1")
 if dfa.accepts(str2):
     print("Accepts str2")
 else:
-    print("Doesn't accept it")
+    print("Doesn't accept str2")
+
 """
 
 """
@@ -62,11 +55,11 @@ else:
 state0 = State(0, False, {1: [1, 5], "epsilon": [99]})
 state1 = State(1, False, {0: [2, 99], 1: [3]})
 state2 = State(2, False, {})
-state3 = State(3, False, {1: [4]})
+state3 = State(3, False, {1: [4], "epsilon": [1]})
 state4 = State(4, True, {})
 state5 = State(5, False, {0: [6]})
 state6 = State(6, True, {1: [6]})
-state99 = State(99, True, {0: [99]})
+state99 = State(99, True, {0: [99], "epsilon": [2, 3]})
 
 str = "11101"
 str2 = "111"
@@ -76,7 +69,19 @@ alphabet = [0, 1]
 states = {0: state0, 1: state1, 2: state2, 3: state3, 4: state4, 5: state5, 6: state6, 99: state99}
 nfa = NFA(states, state0, alphabet)
 
+nfa.allStatesUsingOnlyEpsilonEdges(state0)
+"""
 if nfa.accepts(str4):
     print("Prihvata")
 else:
     print("Ne prihvata")
+"""
+
+"""for j in range (1, 5):
+    for i in combinations("1234", j):
+        for k in range (0, len(i)):
+            print(i[k], end=" ")
+        print()
+#print(combinations("01234", 2), end=" ")
+#print(combinations("01234", 3), end=" ")
+"""
