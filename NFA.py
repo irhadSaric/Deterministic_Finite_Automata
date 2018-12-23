@@ -46,5 +46,51 @@ class NFA(DFA):
                     result.append(i)
             queue.pop(0)
 
-        for i in result:
+        """for i in result:
             print(i)
+        """
+
+    def __partitions(self) -> list:
+        from itertools import combinations
+        result = []
+
+        for j in range(1, self.dictOfStates.__len__()):
+            for i in combinations(self.dictOfStates.keys(), j):
+                temp = []
+                for k in range(0, len(i)):
+                    temp.append(i[k])
+                result.append(temp)
+
+        return result
+
+    def convertToDFA(self):
+        allStates = self.__partitions()
+        dictOfPartitions = {}
+        counter = 0
+        for i in allStates:
+            tuple = (*i, -2)
+            dictOfPartitions[tuple] = counter
+            counter += 1
+        dictOfPartitions[(-1, -2)] = counter
+        #print(dict)
+
+        dfaDict = {}
+        for i in dictOfPartitions:
+            #print(self.dictOfStates)
+            counter = 0
+            startingCoordinateInTuple = i[counter]
+            tempDict = {}
+            tempDict[i] = []
+            while startingCoordinateInTuple != -2:
+                for j in self.alphabet:
+                    if(startingCoordinateInTuple == -1):
+                        break
+                    if(j not in self.dictOfStates[startingCoordinateInTuple].transitions):
+                        tempDict[i].append("Mrs")
+                    else:
+                        tempDict[i].append(self.dictOfStates[startingCoordinateInTuple].transitions[j])
+                counter += 1
+                startingCoordinateInTuple = i[counter]
+            #print(tempDict)
+            dfaDict[dictOfPartitions[i]] = tempDict
+        print(dfaDict)
