@@ -1,5 +1,4 @@
 from NFA import *
-from itertools import combinations
 
 """
 state0 = State(0, True, {0: 0, 1: 1})
@@ -65,20 +64,21 @@ str = "11101"
 str2 = "111"
 str3 = "101111111"
 str4 = "0000000"
-alphabet = [0, 1]
+alphabet = [1, 0]
 states = {0: state0, 1: state1, 2: state2, 3: state3, 4: state4, 5: state5, 6: state6, 99: state99}
 nfa = NFA(states, state0, alphabet)
-
-nfa.allStatesUsingOnlyEpsilonEdges(state0)
+dfa = nfa.convertToDFA()
+print(dfa.accepts("111"))
+#nfa.allStatesUsingOnlyEpsilonEdges(state0)
 """
 if nfa.accepts(str4):
     print("Prihvata")
 else:
     print("Ne prihvata")
 """
-
-"""for j in range (1, 5):
-    for i in combinations("1234", j):
+"""
+for j in range (1, 5):
+    for i in combinations(states.keys(), j):
         for k in range (0, len(i)):
             print(i[k], end=" ")
         print()
