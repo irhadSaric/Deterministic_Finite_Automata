@@ -2,10 +2,10 @@ from DFA import *
 
 class NFA(DFA):
     def __init__(self):
-        DFA.__init__()
+        super(NFA, self).__init__()
 
     def __init__(self, dictOfStates : dict, startingState : State, alphabet: list):
-        DFA.__init__(self, dictOfStates, startingState, alphabet)
+        super(NFA, self).__init__(dictOfStates, startingState, alphabet)
 
     def __stateNumber(self, number: int) -> State:
         return self.dictOfStates[number]
@@ -46,6 +46,8 @@ class NFA(DFA):
                     result.append(i)
             queue.pop(0)
 
+        return result
+
         """for i in result:
             print(i)
         """
@@ -63,7 +65,7 @@ class NFA(DFA):
 
         return result
 
-    def convertToDFA(self):
+    def convertToDFA(self) -> DFA:
         allStates = self.__partitions()
         dictOfPartitions = {}
         counter = 0
@@ -110,18 +112,18 @@ class NFA(DFA):
                     resultDict[k].append(list(set(lista)))
         #print(resultDict)
 
-        print("_________________________________________")
+        #print("_________________________________________")
         for i in resultDict:#i=0123.....
-            print(i, end=" : ")
+            #print(i, end=" : ")
             for j in resultDict[i]:
                 if j == [-1337]:
                     j[0] = -1
                 if i != (-1, -2) and j[-1] == -1337:
                     del j[-1]
                 j.append(-2)
-            print(resultDict[i])
+            #print(resultDict[i])
 
-        print("_________________________________________")
+        #print("_________________________________________")
 
         tempResult = {}
         for i in resultDict:
@@ -137,6 +139,30 @@ class NFA(DFA):
                     tempTuple = tuple(tempList2)
                     tempList.append(tempTuple)
                 tempResult[i] = tempList
-        print(tempResult)
-        print("__________________-")
-        print(tempResult.keys())
+        #print("Temp result: ")
+        #print(tempResult)
+        converted = {}
+        for i in tempResult.keys():
+            #stateNumber: int, isFinalState: bool, transitions: dict)
+            tempDictOfTransitions = {}
+            tempBool = False
+            for index, symbol in enumerate(self.alphabet):
+                tempDictOfTransitions[symbol] = dictOfPartitions[tempResult[i][index]]
+            for j in i:
+                if j != -1 and j != -2:
+                    if self.dictOfStates[j].isFinalState:
+                        tempBool = True
+            converted[dictOfPartitions[i]] = State(dictOfPartitions[i], tempBool, tempDictOfTransitions)
+        #print("____________________")
+        #print("Converted:")
+        #for i in converted:
+        #    print(converted[i])
+
+        help = sorted(self.allStatesUsingOnlyEpsilonEdges(self.__stateNumber(0)))
+        help.append(-2)
+        startingNFAState = tuple(help)
+        startingNFAState = dictOfPartitions[startingNFAState]
+        #print(converted[startingNFAState])
+        startingNFAState = converted[startingNFAState]
+        finalDFA = DFA(converted, startingNFAState, self.alphabet)
+        return finalDFA

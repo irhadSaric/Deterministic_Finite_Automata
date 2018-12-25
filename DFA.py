@@ -1,6 +1,6 @@
 from State import State
 
-class DFA:
+class DFA(object):
     def __init__(self):
         self.dictOfStates = {}
         self.startingState = None
