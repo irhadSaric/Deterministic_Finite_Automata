@@ -50,7 +50,7 @@ if dfa.accepts(str3):
 else:
     print("Ne prihvata")
 """
-
+"""TEST ZA NFA KONVERT
 state0 = State(0, False, {1: [1, 5], "epsilon": [99]})
 state1 = State(1, False, {0: [2, 99], 1: [3]})
 state2 = State(2, False, {})
@@ -71,6 +71,8 @@ dfa = nfa.convertToDFA()
 print(dfa.accepts("111"))
 #nfa.allStatesUsingOnlyEpsilonEdges(state0)
 """
+
+"""
 if nfa.accepts(str4):
     print("Prihvata")
 else:
@@ -85,3 +87,22 @@ for j in range (1, 5):
 #print(combinations("01234", 2), end=" ")
 #print(combinations("01234", 3), end=" ")
 """
+
+"""NFA TO DFA IZ TEKE"""
+alfabet = ['a', 'b']
+state1 = State(1, False, {'a':  [3], "epsilon": [2]})
+state2 = State(2, True, {'a': [1]})
+state3 = State(3, False, {'a': [2], 'b': [2, 3]})
+states = {1: state1, 2: state2, 3: state3}
+nfa2 = NFA(states, state1, alfabet)
+string123 = "aba"
+if(nfa2.accepts(string123)):
+    print("Prihvata")
+else:
+    print("Ne prihvata")
+
+dfa2 = nfa2.convertToDFA()
+if(dfa2.accepts(string123)):
+    print("Prihvata")
+else:
+    print("Ne prihvata")
