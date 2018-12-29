@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from DFA import *
 
 class NFA(DFA):
@@ -67,6 +69,21 @@ class NFA(DFA):
 
         return result
 
+    def __unnecessaryState(self, Dict: dict, start: State) -> int:
+        for i in Dict:
+            counter = 0
+            for j in Dict:
+                if Dict[i] == start:
+                    print(str(i) + "Pocetno")
+                    counter = 1
+                    break
+                if j != i:
+                    if i in Dict[j].transitions.values():
+                        counter += 1
+            if counter == 0:
+                return i
+        return -3
+
     def convertToDFA(self) -> DFA:
         allStates = self.__partitions()
         dictOfPartitions = {}
@@ -78,7 +95,7 @@ class NFA(DFA):
         dictOfPartitions[(-1, -2)] = counter
 
         dfaDict = {}
-        print(dictOfPartitions)
+        #print(dictOfPartitions)
         for i in dictOfPartitions:
             counter = 0
             startingCoordinateInTuple = i[counter]
@@ -102,7 +119,7 @@ class NFA(DFA):
                 counter += 1
                 startingCoordinateInTuple = i[counter]
             dfaDict[dictOfPartitions[i]] = tempDict
-        print(dfaDict)
+        #print(dfaDict)
 
         #print(dfaDict)
         resultDict = {}
@@ -174,6 +191,15 @@ class NFA(DFA):
             print(i, end=" : ")
             print(converted[i].transitions, end=" : ")
             print(converted[i].isFinalState)
+        print("_______________________BRISANJE : ________-")
+
+        unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
+        while(unnecessaryState != -3):
+            converted.pop(unnecessaryState)
+            print(converted)
+            unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
+        print(converted)
+
         finalDFA = DFA(converted, startingNFAState, self.alphabet)
 
 
