@@ -1,6 +1,10 @@
 from NFA import *
 
 """
+    Malekov komentar
+"""
+
+"""
 state0 = State(0, True, {0: 0, 1: 1})
 state1 = State(1, True, {0: 4, 1: 2})
 state2 = State(2, True, {0: 2, 1: 3})
