@@ -90,10 +90,10 @@ for j in range (1, 5):
 
 """NFA TO DFA IZ TEKE"""
 alfabet = ['a', 'b']
-state1 = State(1, False, {'a':  [3], "epsilon": [2]})
-state2 = State(2, True, {'a': [1]})
-state3 = State(3, False, {'a': [2], 'b': [2, 3]})
-states = {1: state1, 2: state2, 3: state3}
+state1 = State(0, False, {'a':  [2], "epsilon": [1]})
+state2 = State(1, True, {'a': [0]})
+state3 = State(2, False, {'a': [1], 'b': [1, 2]})
+states = {0: state1, 1: state2, 2: state3}
 nfa2 = NFA(states, state1, alfabet)
 string123 = "aba"
 if(nfa2.accepts(string123)):

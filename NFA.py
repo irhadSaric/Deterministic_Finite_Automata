@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from DFA import *
 
 class NFA(DFA):
@@ -67,6 +69,21 @@ class NFA(DFA):
 
         return result
 
+    def __unnecessaryState(self, Dict: dict, start: State) -> int:
+        for i in Dict:
+            counter = 0
+            for j in Dict:
+                if Dict[i] == start:
+                    print(str(i) + "Pocetno")
+                    counter = 1
+                    break
+                if j != i:
+                    if i in Dict[j].transitions.values():
+                        counter += 1
+            if counter == 0:
+                return i
+        return -3
+
     def convertToDFA(self) -> DFA:
         allStates = self.__partitions()
         dictOfPartitions = {}
@@ -78,23 +95,27 @@ class NFA(DFA):
         dictOfPartitions[(-1, -2)] = counter
 
         dfaDict = {}
+        #print(dictOfPartitions)
         for i in dictOfPartitions:
             counter = 0
             startingCoordinateInTuple = i[counter]
             tempDict = {}
             tempDict[i] = []
-            while startingCoordinateInTuple != -2:
-                for j in self.alphabet:
-                    if(startingCoordinateInTuple == -1):
+            while startingCoordinateInTuple != -2 and startingCoordinateInTuple != -1:
+                for c2, j in enumerate(self.alphabet):
+                    if(startingCoordinateInTuple == -1 or startingCoordinateInTuple == -2):
                         break
                     else:
                         if(j not in self.dictOfStates[startingCoordinateInTuple].transitions):
                             tempDict[i].append([-1337])#Ako nema grana iz stanja za znak iz alfabeta
                         else:
                             tempDict[i].append(self.dictOfStates[startingCoordinateInTuple].transitions[j])
-                    for element in self.allStatesUsingOnlyEpsilonEdges(self.dictOfStates[startingCoordinateInTuple]):
-                        tempDict[i][0].append(element)
-                        #print(tempDict)
+                for c2, j in enumerate(tempDict[i]):
+                    tempListEpsilonStates = []
+                    for state in j:
+                        if state != -1337 and state != -1 and state != -2:
+                            tempListEpsilonStates += self.allStatesUsingOnlyEpsilonEdges(self.dictOfStates[state])
+                            tempDict[i][c2] = tempListEpsilonStates
                 counter += 1
                 startingCoordinateInTuple = i[counter]
             dfaDict[dictOfPartitions[i]] = tempDict
@@ -102,6 +123,8 @@ class NFA(DFA):
 
         #print(dfaDict)
         resultDict = {}
+        #print(":____")
+        #print(dfaDict)
         for i in dfaDict:
             for k in dfaDict[i]:
                 resultDict[k] = []
@@ -114,8 +137,9 @@ class NFA(DFA):
                         lista = lista + dfaDict[i][k][element]
                     resultDict[k].append(list(set(lista)))
                 #print(resultDict[k])
+        #print(resultDict)
 
-       # print("----")
+        #print("----")
         #print(resultDict)
         for i in resultDict:
             for j in resultDict[i]:
@@ -124,7 +148,9 @@ class NFA(DFA):
                 if i != (-1, -2) and j[-1] == -1337:
                     del j[-1]
                 j.append(-2)
-        #print(resultDict)
+        """print("************")
+        print(resultDict)
+        print("_________")"""
         tempResult = {}
         for i in resultDict:
             if i == (-1, -2):
@@ -140,12 +166,15 @@ class NFA(DFA):
                     tempList.append(tempTuple)
                 tempResult[i] = tempList
         converted = {}
+        #print(tempResult)
         #print(dictOfPartitions)
         for i in tempResult.keys():
             tempDictOfTransitions = {}
             tempBool = False
             for index, symbol in enumerate(self.alphabet):
+                #print(str(index) + " : " + symbol)
                 tempDictOfTransitions[symbol] = dictOfPartitions[tempResult[i][index]]
+            #print(tempDictOfTransitions)
             for j in i:
                 if j != -1 and j != -2:
                     if self.dictOfStates[j].isFinalState:
@@ -157,5 +186,21 @@ class NFA(DFA):
         startingNFAState = tuple(help)
         startingNFAState = dictOfPartitions[startingNFAState]
         startingNFAState = converted[startingNFAState]
+        print("_______________________")
+        for i in converted:
+            print(i, end=" : ")
+            print(converted[i].transitions, end=" : ")
+            print(converted[i].isFinalState)
+        print("_______________________BRISANJE : ________-")
+
+        unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
+        while(unnecessaryState != -3):
+            converted.pop(unnecessaryState)
+            print(converted)
+            unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
+        print(converted)
+
         finalDFA = DFA(converted, startingNFAState, self.alphabet)
+
+
         return finalDFA
