@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from DFA import *
 
 class NFA(DFA):
@@ -12,8 +10,7 @@ class NFA(DFA):
     def __stateNumber(self, number: int) -> State:
         return self.dictOfStates[number]
 
-    def __accepts_rek(self, startingState: State, string: str, indexOfCurrentSymbol: int):
-        #print(startingState.stateNumber, indexOfCurrentSymbol)
+    def __accepts_rek(self, startingState: State, string: str, indexOfCurrentSymbol: int) -> bool:
         if indexOfCurrentSymbol == len(string):
             if startingState.isFinalState:
                 return True
@@ -30,7 +27,6 @@ class NFA(DFA):
                     if(self.__accepts_rek(self.__stateNumber(i), string, indexOfCurrentSymbol)):
                         return True
             if symbol in startingState.transitions:
-            #print(symbol, startingState.stateNumber, indexOfCurrentSymbol)
                 for i in startingState.transitions[symbol]:
                     if(self.__accepts_rek(self.__stateNumber(i), string, indexOfCurrentSymbol + 1)):
                         return True
@@ -49,12 +45,7 @@ class NFA(DFA):
                     queue.append(self.__stateNumber(i))
                     result.append(i)
             queue.pop(0)
-
         return result
-
-        """for i in result:
-            print(i)
-        """
 
     def __partitions(self) -> list:
         from itertools import combinations
@@ -69,33 +60,18 @@ class NFA(DFA):
 
         return result
 
-    def __unnecessaryState(self, Dict: dict, start: State) -> int:
-        for i in Dict:
-            counter = 0
-            for j in Dict:
-                if Dict[i] == start:
-                    print(str(i) + "Pocetno")
-                    counter = 1
-                    break
-                if j != i:
-                    if i in Dict[j].transitions.values():
-                        counter += 1
-            if counter == 0:
-                return i
-        return -3
-
-    def convertToDFA(self) -> DFA:
-        allStates = self.__partitions()
+    def __makeDictOfPartitions(self, partitions: list) -> dict:
         dictOfPartitions = {}
         counter = 0
-        for i in allStates:
+        for i in partitions:
             Tuple = (*i, -2)
             dictOfPartitions[Tuple] = counter
             counter += 1
         dictOfPartitions[(-1, -2)] = counter
+        return dictOfPartitions
 
+    def __makeDFAdict(self, dictOfPartitions: dict) -> dict:
         dfaDict = {}
-        #print(dictOfPartitions)
         for i in dictOfPartitions:
             counter = 0
             startingCoordinateInTuple = i[counter]
@@ -103,10 +79,10 @@ class NFA(DFA):
             tempDict[i] = []
             while startingCoordinateInTuple != -2 and startingCoordinateInTuple != -1:
                 for c2, j in enumerate(self.alphabet):
-                    if(startingCoordinateInTuple == -1 or startingCoordinateInTuple == -2):
+                    if startingCoordinateInTuple == -1 or startingCoordinateInTuple == -2:
                         break
                     else:
-                        if(j not in self.dictOfStates[startingCoordinateInTuple].transitions):
+                        if j not in self.dictOfStates[startingCoordinateInTuple].transitions:
                             tempDict[i].append([-1337])#Ako nema grana iz stanja za znak iz alfabeta
                         else:
                             tempDict[i].append(self.dictOfStates[startingCoordinateInTuple].transitions[j])
@@ -119,88 +95,96 @@ class NFA(DFA):
                 counter += 1
                 startingCoordinateInTuple = i[counter]
             dfaDict[dictOfPartitions[i]] = tempDict
-        #print(dfaDict)
+        return dfaDict
 
-        #print(dfaDict)
+    def __mergeTransitions(self, dfaDict: dict) -> dict:
         resultDict = {}
-        #print(":____")
-        #print(dfaDict)
         for i in dfaDict:
             for k in dfaDict[i]:
                 resultDict[k] = []
                 for f in range(0, len(self.alphabet)):
                     lista = []
-                    for element in range(0+f, len(dfaDict[i][k]), len(self.alphabet)):
-                        #if(dfaDict[i][k][element] == -1337):
-                        #    dfaDict[i][k][element] = [dfaDict[i][k][element]]
-                        #print(lista)
+                    for element in range(0 + f, len(dfaDict[i][k]), len(self.alphabet)):
                         lista = lista + dfaDict[i][k][element]
                     resultDict[k].append(list(set(lista)))
-                #print(resultDict[k])
-        #print(resultDict)
+                # print(resultDict[k])
+        return resultDict
 
-        #print("----")
-        #print(resultDict)
-        for i in resultDict:
-            for j in resultDict[i]:
+    def __simplify(self, mergedTransitionsInDfaDict: dict) -> dict:
+        for i in mergedTransitionsInDfaDict:
+            for j in mergedTransitionsInDfaDict[i]:
                 if j == [-1337]:
                     j[0] = -1
                 if i != (-1, -2) and j[-1] == -1337:
                     del j[-1]
                 j.append(-2)
-        """print("************")
-        print(resultDict)
-        print("_________")"""
+        return mergedTransitionsInDfaDict
+
+    def __transitionsToTuples(self, mergedTransitionsInDfaDict: dict) -> dict:
         tempResult = {}
-        for i in resultDict:
+        for i in mergedTransitionsInDfaDict:
             if i == (-1, -2):
                 tempResult[i] = [(-1, -2), (-1, -2)]
             else:
                 tempList = []
-                for j in resultDict[i]:
-                    tempList2 = sorted(j[0:len(j)-1])
-                    tempList2 += [j[len(j)-1]]
+                for j in mergedTransitionsInDfaDict[i]:
+                    tempList2 = sorted(j[0:len(j) - 1])
+                    tempList2 += [j[len(j) - 1]]
                     if tempList2[0] == -1337:
                         del tempList2[0]
                     tempTuple = tuple(tempList2)
                     tempList.append(tempTuple)
                 tempResult[i] = tempList
+        return tempResult
+
+    def __makeStates(self, tempResult: dict, dictOfPartitions: dict) -> dict:
         converted = {}
-        #print(tempResult)
-        #print(dictOfPartitions)
         for i in tempResult.keys():
             tempDictOfTransitions = {}
             tempBool = False
             for index, symbol in enumerate(self.alphabet):
-                #print(str(index) + " : " + symbol)
                 tempDictOfTransitions[symbol] = dictOfPartitions[tempResult[i][index]]
-            #print(tempDictOfTransitions)
             for j in i:
                 if j != -1 and j != -2:
                     if self.dictOfStates[j].isFinalState:
                         tempBool = True
             converted[dictOfPartitions[i]] = State(dictOfPartitions[i], tempBool, tempDictOfTransitions)
+        return converted
+
+    def __unnecessaryState(self, Dict: dict, start: State) -> int:
+        for i in Dict:
+            counter = 0
+            for j in Dict:
+                if Dict[i] == start:
+                    counter = 1
+                    break
+                if j != i:
+                    if i in Dict[j].transitions.values():
+                        counter += 1
+            if counter == 0:
+                return i
+        return -3
+
+    def convertToDFA(self) -> DFA:
+        allStates = self.__partitions()
+        dictOfPartitions = self.__makeDictOfPartitions(allStates)
+        dfaDict = self.__makeDFAdict(dictOfPartitions)
+        mergedTransitionsInDfaDict = self.__mergeTransitions(dfaDict)
+        mergedTransitionsInDfaDict = self.__simplify(mergedTransitionsInDfaDict)
+        tempResult = self.__transitionsToTuples(mergedTransitionsInDfaDict)
+        converted = self.__makeStates(tempResult, dictOfPartitions)
 
         help = sorted(self.allStatesUsingOnlyEpsilonEdges(self.__stateNumber(list(self.dictOfStates.keys())[0])))
         help.append(-2)
         startingNFAState = tuple(help)
         startingNFAState = dictOfPartitions[startingNFAState]
         startingNFAState = converted[startingNFAState]
-        print("_______________________")
-        for i in converted:
-            print(i, end=" : ")
-            print(converted[i].transitions, end=" : ")
-            print(converted[i].isFinalState)
-        print("_______________________BRISANJE : ________-")
 
         unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
         while(unnecessaryState != -3):
             converted.pop(unnecessaryState)
-            print(converted)
             unnecessaryState = self.__unnecessaryState(converted, startingNFAState)
-        print(converted)
 
         finalDFA = DFA(converted, startingNFAState, self.alphabet)
-
 
         return finalDFA
