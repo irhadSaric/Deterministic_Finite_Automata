@@ -73,7 +73,7 @@ print(dfa.accepts(str5))
 """
 
 """NFA TO DFA IZ TEKE"""
-
+"""
 alfabet = ['a', 'b']
 state1 = State(0, False, {'a':  [2], "epsilon": [1]})
 state2 = State(1, True, {'a': [0]})
@@ -91,3 +91,51 @@ if(dfa2.accepts(string123)):
     print("Accepts")
 else:
     print("Doesn't accept")
+"""
+
+"""
+#a* + (ab)*
+alfabet = ['a', 'b']
+state0 = State(0, False, {"epsilon": [1, 2]})
+state1 = State(1, True, {'a': [1]})
+state2 = State(2, False, {'a': [3]})
+state3 = State(3, False, {'b': [4]})
+state4 = State(4, True, {"epsilon": [2]})
+states = {0: state0, 1: state1, 2: state2, 3: state3, 4: state4}
+nfa = NFA(states, state0, alfabet)
+if nfa.accepts("abababababab"):
+    print("Accepts")
+else:
+    print("Doesn't accept")
+"""
+
+"""
+#NFA that accepts all binary strings that end with 101
+alfabet = [0, 1]
+state0 = State(0, False, {0: [0], 1: [0, 1]})
+state1 = State(1, False, {0: [2]})
+state2 = State(2, False, {1: [3]})
+state3 = State(3, True, {})
+states = {0: state0, 1: state1, 2: state2, 3: state3}
+nfa = NFA(states, state0, alfabet)
+dfa = nfa.convertToDFA()
+if nfa.accepts("0100111"):
+    print("Accepts")
+else:
+    print("Doesn't accept")
+"""
+
+"""
+#Accepts all binary strings where the last symbol is 0 or that contain only 1’s
+alfabet = [0, 1]
+state0 = State(0, True, {1: [0]})
+state1 = State(1, False, {"epsilon": [0, 2]})
+state2 = State(2, False, {0: [2, 3], 1: [2]})
+state3 = State(3, True, {})
+states = {0: state0, 1: state1, 2: state2, 3: state3}
+nfa = NFA(states, state1, alfabet)
+if nfa.accepts("1011"):
+    print("Accepts")
+else:
+    print("Doesn't accept")
+"""
