@@ -16,28 +16,31 @@ class DFA(object):
             if state.stateNumber == number:
                 return state
 
-    def __stateNumber(self, number: int) -> State:
+    """def __stateNumber(self, number: int) -> State:
         for state in self.listOfStates:
             if state.stateNumber == number:
-                return state
+                return state"""
 
     def accepts(self, string: str) -> bool:
-        """
-        for i in alphabet:
-            for key, value in dictOfStates.items():
-                if i not in value.transitions:
-                    print("Missing transition for " + str(i) + ", state: ", key)
-                    return
-        """
-        currentState = self.startingState
-        for i in string:
-            if not i.isalpha():
-                nextState = currentState.transitions[int(i)]
+        try:
+            for i in self.alphabet:
+                for key, value in self.dictOfStates.items():
+                    if i not in value.transitions:
+                        raise Exception("ERROR : Missing transition: state-> " + str(key) + ", symbol-> " + str(i))
+                        return False
+
+            currentState = self.startingState
+            for i in string:
+                if not i.isalpha():
+                    nextState = currentState.transitions[int(i)]
+                else:
+                    nextState = currentState.transitions[i]
+                currentState = self.dictOfStates[nextState]
+                #print(currentState.stateNumber)
+            if currentState.isFinalState:
+                return True
             else:
-                nextState = currentState.transitions[i]
-            currentState = self.dictOfStates[nextState]
-            #print(currentState.stateNumber)
-        if currentState.isFinalState :
-            return True
-        else:
+                return False
+        except Exception as e:
+            print(e)
             return False
