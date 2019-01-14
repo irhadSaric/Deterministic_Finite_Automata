@@ -6,7 +6,7 @@ class DFA(object):
         self.startingState = None
         self.alphabet = []
 
-    def __init__(self, dictOfStates : dict, startingState : State, alphabet: list):
+    def __init__(self, dictOfStates: dict, startingState: State, alphabet: list):
         self.dictOfStates = dictOfStates
         self.startingState = startingState
         self.alphabet = alphabet
