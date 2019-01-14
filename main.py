@@ -80,7 +80,7 @@ state2 = State(1, True, {'a': [0]})
 state3 = State(2, False, {'a': [1], 'b': [1, 2]})
 states = {0: state1, 1: state2, 2: state3}
 nfa2 = NFA(states, state1, alfabet)
-string123 = "abaa"
+string123 = "baa"
 if(nfa2.accepts(string123)):
     print("Accepts")
 else:
