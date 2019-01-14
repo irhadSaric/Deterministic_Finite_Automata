@@ -1,5 +1,6 @@
 from State import State
 
+
 class DFA(object):
     def __init__(self):
         self.dictOfStates = {}
@@ -16,11 +17,6 @@ class DFA(object):
             if state.stateNumber == number:
                 return state
 
-    """def __stateNumber(self, number: int) -> State:
-        for state in self.listOfStates:
-            if state.stateNumber == number:
-                return state"""
-
     def accepts(self, string: str) -> bool:
         try:
             for i in self.alphabet:
@@ -36,7 +32,6 @@ class DFA(object):
                 else:
                     nextState = currentState.transitions[i]
                 currentState = self.dictOfStates[nextState]
-                #print(currentState.stateNumber)
             if currentState.isFinalState:
                 return True
             else:
