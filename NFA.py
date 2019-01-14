@@ -15,6 +15,9 @@ class NFA(DFA):
             if startingState.isFinalState:
                 return True
             if indexOfCurrentSymbol >= len(string):
+                for state in startingState.transitions["epsilon"]:
+                    if self.__stateNumber(state).isFinalState:
+                        return True
                 return
 
         symbol = string[indexOfCurrentSymbol]
